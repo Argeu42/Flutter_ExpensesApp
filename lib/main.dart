@@ -25,11 +25,11 @@ class ExpensesApp extends StatelessWidget {
           backgroundColor: Colors.purple,
           foregroundColor: Colors.white,
           titleTextStyle: TextStyle(
-              fontFamily: 'OpenSans',
-              fontSize: 20,
-              fontWeight: FontWeight.bold
-            ),
-        ), 
+            fontFamily: 'OpenSans',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.purple,
           primary: Colors.purple,
@@ -43,9 +43,9 @@ class ExpensesApp extends StatelessWidget {
             fontFamily: 'OpenSans',
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black
-          )
-        )
+            color: Colors.black,
+          ),
+        ),
       ),
     );
   }
@@ -59,43 +59,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-  final List<Transaction> _transactions = [
-        Transaction(
-      id: 't0', 
-      title: 'Conta antiga', 
-      value: 410.76, 
-      date: DateTime.now().subtract(Duration(days: 33)),
-    ),
-    Transaction(
-      id: 't1', 
-      title: 'Novo Tênis de Corrida', 
-      value: 310.76, 
-      date: DateTime.now().subtract(Duration(days: 3)),
-    ),
-    Transaction(
-      id: 't2', 
-      title: 'Novo jogo na Steam', 
-      value: 150.00, 
-      date: DateTime.now().subtract(Duration(days: 4)),
-
-    ),
-  ];
+  final List<Transaction> _transactions = [];
 
   List<Transaction> get _recentTransactions {
-    return _transactions.where( (tr) {
-      return tr.date.isAfter(DateTime.now().subtract(
-        Duration(days: 7),
-      ));
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
     }).toList();
   }
 
-    _addTransaction(String title, double value){
+  _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
-      id: Random().nextDouble().toString() ,
-      title: title, 
-      value: value, 
-      date: DateTime.now(),
+      id: Random().nextDouble().toString(),
+      title: title,
+      value: value,
+      date: date,
     );
 
     setState(() {
@@ -105,12 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
 
-  _openTransactionFormModal(BuildContext context){
+  _openTransactionFormModal(BuildContext context) {
     showModalBottomSheet(
-      context: context, 
+      context: context,
       builder: (_) {
         return TransactionForm(_addTransaction);
-      });
+      },
+    );
   }
 
   @override
@@ -122,7 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             onPressed: () => _openTransactionFormModal(context),
-            icon: Icon(Icons.add_comment_rounded))
+            icon: Icon(Icons.add_comment_rounded),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -137,14 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openTransactionFormModal(context),
         backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(
-          Icons.add_comment_rounded, 
-          color: Colors.white,
-        ),  
+        child: Icon(Icons.add_comment_rounded, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
-
-
