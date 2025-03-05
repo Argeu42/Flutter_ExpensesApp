@@ -68,6 +68,7 @@ class _TransactionFormState extends State<TransactionForm> {
                 children: [
                   Expanded(
                     child: Text(
+                      // ignore: unnecessary_null_comparison
                       _selectedDate == null
                           ? 'Nenhuma data selecionada!'
                           : 'Data selecionada: ${DateFormat('dd/MM/y').format(_selectedDate)}',

@@ -33,7 +33,7 @@ class ExpensesApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.purple,
           primary: Colors.purple,
-          secondary: Colors.amber,
+          secondary: Colors.purpleAccent,
           tertiary: Colors.black,
           surface: Colors.white,
           surfaceContainerHigh: Colors.white,
@@ -82,7 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
 
-
   _removeTransaction(String id) {
     setState(() {
       _transactions.removeWhere((tr) {
@@ -102,23 +101,35 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      title: Text('Despesas Pessoais'),
+      actions: [
+        IconButton(
+          onPressed: () => _openTransactionFormModal(context),
+          icon: Icon(Icons.add_comment_rounded),
+        ),
+      ],
+    );
+    final availableHeight =
+        MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text('Despesas Pessoais'),
-        actions: [
-          IconButton(
-            onPressed: () => _openTransactionFormModal(context),
-            icon: Icon(Icons.add_comment_rounded),
-          ),
-        ],
-      ),
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Chart(_recentTransactions),
-            TransactionList(_transactions, _removeTransaction),
+            Container(
+              height: availableHeight * 0.22,
+              child: Chart(_recentTransactions),
+            ),
+            Container(
+              height: availableHeight * 0.75,
+              child: TransactionList(_transactions, _removeTransaction),
+            ),
           ],
         ),
       ),
