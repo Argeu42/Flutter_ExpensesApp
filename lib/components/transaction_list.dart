@@ -11,22 +11,26 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return transactions.isEmpty
-        ? Column(
-          children: [
-            SizedBox(height: 20),
-            Text(
-              'Nenhuma Transação Cadastrada!',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            SizedBox(height: 200),
-            Container(
-              height: 250,
-              child: Image.asset(
-                'assets/images/waiting.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ],
+        ? LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              children: [
+                SizedBox(height: 20),
+                Text(
+                  'Nenhuma Transação Cadastrada!',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                SizedBox(height: 30),
+                Container(
+                  height: constraints.maxHeight * 0.6,
+                  child: Image.asset(
+                    'assets/images/waiting.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            );
+          },
         )
         : ListView.builder(
           itemCount: transactions.length,
@@ -34,10 +38,7 @@ class TransactionList extends StatelessWidget {
             final tr = transactions[index];
             return Card(
               elevation: 5,
-              margin: EdgeInsets.symmetric(
-                vertical: 8,
-                horizontal: 5,
-              ),
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.primary,
@@ -59,8 +60,8 @@ class TransactionList extends StatelessWidget {
                 subtitle: Text(DateFormat('d MMM y').format(tr.date)),
                 trailing: IconButton(
                   onPressed: () => onRemove(tr.id),
-                  color: Theme.of(context).colorScheme.error ,
-                  icon: Icon(Icons.delete)
+                  color: Theme.of(context).colorScheme.error,
+                  icon: Icon(Icons.delete),
                 ),
               ),
             );
