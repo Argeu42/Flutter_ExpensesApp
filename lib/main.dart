@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import './components/transaction_list.dart';
 import './components/transaction_form.dart';
@@ -99,38 +101,48 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget _getIconButton(IconData icon, Function() fn) {
+    return Platform.isIOS
+        ? GestureDetector(onTap: fn, child: Icon(icon))
+        : IconButton(onPressed: fn, icon: Icon(icon));
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final mediaQuery = MediaQuery.of(context);
+    bool isLandscape = mediaQuery.orientation == Orientation.landscape;
 
-    final appBar = AppBar(
-      title: Text('Despesas Pessoais'),
-      actions: [
-        if (isLandscape)
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _showChart = !_showChart;
-              });
-            },
-            icon: Icon(_showChart ? Icons.list : Icons.show_chart),
-          ),
-        IconButton(
-          onPressed: () => _openTransactionFormModal(context),
-          icon: Icon(Icons.add_comment_rounded),
-        ),
-      ],
-    );
+    final iconList = Platform.isIOS ? CupertinoIcons.refresh : Icons.list;
+    final chartList = Platform.isIOS ? CupertinoIcons.refresh : Icons.show_chart;
+
+
+    final actions = [
+      if (isLandscape)
+        _getIconButton(_showChart ? iconList : chartList, () {
+          setState(() {
+            _showChart = !_showChart;
+          });
+        }),
+      _getIconButton(
+        Platform.isIOS ? CupertinoIcons.add_circled : Icons.add_comment_rounded,
+        () => _openTransactionFormModal(context),
+      ),
+    ];
+
+    final PreferredSizeWidget appBar =
+        Platform.isIOS
+            ? CupertinoNavigationBar(
+              middle: Text('Despesas Pessoais'),
+              trailing: Row(mainAxisSize: MainAxisSize.min, children: actions),
+            )
+            : AppBar(title: Text('Despesas Pessoais'), actions: actions);
     final availableHeight =
-        MediaQuery.of(context).size.height -
+        mediaQuery.size.height -
         appBar.preferredSize.height -
-        MediaQuery.of(context).padding.top;
+        mediaQuery.padding.top;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: appBar,
-      body: SingleChildScrollView(
+    final bodyPage = SafeArea(
+      child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -156,18 +168,36 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             if (!_showChart || !isLandscape)
               Container(
-                height: availableHeight * 0.75,
+                height: availableHeight * (isLandscape ? 1 : 0.7),
                 child: TransactionList(_transactions, _removeTransaction),
               ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _openTransactionFormModal(context),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(Icons.add_comment_rounded, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: Text('Despesas Pessoais'),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: actions),
+          ),
+          child: bodyPage,
+        )
+        : Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          appBar: appBar,
+          body: bodyPage,
+          floatingActionButton:
+              Platform.isIOS
+                  ? Container()
+                  : FloatingActionButton(
+                    onPressed: () => _openTransactionFormModal(context),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    child: Icon(Icons.add_comment_rounded, color: Colors.white),
+                  ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+        );
   }
 }
